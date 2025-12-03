@@ -18,11 +18,11 @@ MonoBehaviour:
   catDialogue: "\u2026\u2026\u55B5\u3002"
   systemMessage: "\u4F60\u96E2\u958B\u4E86\u3002\u4F46\u90A3\u96D9\u773C\u775B\u4E00\u76F4\u7559\u5728\u4F60\u5FC3\u88E1\u3002"
   options:
-  - optionText: "\u6211\u60F3\u9760\u8FD1\u4F60..."
+  - optionText: "\u518D\u9078\u4E00\u6B21\u3002"
     resultText: 
-    nextNodeID: Node_2
+    nextNodeID: Node_1
     scoreChange: 1
-  - optionText: "\u5C0D\u4E0D\u8D77\uFF0C\u6211\u4E0D\u80FD\u9818\u990A\u4F60..."
+  - optionText: "\u771F\u7684\u96E2\u958B\u3002"
     resultText: 
-    nextNodeID: Node_1_Choice_2
+    nextNodeID: Node_0
     scoreChange: 0

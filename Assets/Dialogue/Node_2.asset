@@ -12,17 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85becadbeb0639448b23b4a37040e64, type: 3}
   m_Name: Node_2
   m_EditorClassIdentifier: 
-  nodeID: Node_1
-  backgroundSprite: {fileID: 2608716955419393788, guid: 05a6f10f9bf1e054993b6719c8546c3a, type: 3}
+  nodeID: Node_2
+  backgroundSprite: {fileID: 7363049025411989027, guid: 6a4685ec6a8363f47afa9c2629aadea3, type: 3}
   catSprite: {fileID: 0}
-  catDialogue: "\u2026\u2026\u54AA\u55DA\uFF1F\u4F60\u2026\u2026\u8981\u505A\u4EC0\u9EBC\uFF1F"
-  systemMessage: "\u7B2C\u4E00\u95DC\uFF1A\u4F60\u8981\u9818\u990A\u7260\u55CE\uFF1F"
+  catDialogue: "\u2026\u2026\u6211\u53EF\u4EE5\u5403\u4EC0\u9EBC\uFF1F"
+  systemMessage: "\u7B2C\u4E8C\u95DC\uFF1A\u4F60\u8981\u7D66\u7260\u5403\u4EC0\u9EBC\uFF1F"
   options:
-  - optionText: "\u6211\u60F3\u9760\u8FD1\u4F60..."
+  - optionText: "\u9935\u7F50\u982D"
     resultText: 
-    nextNodeID: Node_2
+    nextNodeID: Node_can
     scoreChange: 1
-  - optionText: "\u5C0D\u4E0D\u8D77\uFF0C\u6211\u4E0D\u80FD\u9818\u990A\u4F60..."
+  - optionText: "\u9935\u98FC\u6599"
     resultText: 
-    nextNodeID: Node_1_Choice_2
-    scoreChange: 0
+    nextNodeID: Node_feed
+    scoreChange: 1
+  - optionText: "\u9935\u725B\u5976"
+    resultText: 
+    nextNodeID: Node_milk
+    scoreChange: 1
+  - optionText: "\u9935\u8089\u6CE5"
+    resultText: 
+    nextNodeID: Node_meatpaste
+    scoreChange: 1
