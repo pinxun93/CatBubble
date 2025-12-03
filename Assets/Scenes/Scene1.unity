@@ -760,7 +760,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 57a3948cfaacd894ab8024fcbc374b13, type: 2}
   - {fileID: 11400000, guid: 4a968bda2b514bd43805ef35b23d51d0, type: 2}
   - {fileID: 11400000, guid: c12ac2c46feb25a47a97b70be2fc5478, type: 2}
-  - {fileID: 11400000, guid: 9debf7170aa408749a48aa6b9a0fd788, type: 2}
   - {fileID: 11400000, guid: b6c266d1097e2b844b1228c5fd05f8c7, type: 2}
   typewriterSpeed: 0.05
 --- !u!4 &885765511
