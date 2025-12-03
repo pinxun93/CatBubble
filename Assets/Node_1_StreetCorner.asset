@@ -16,13 +16,13 @@ MonoBehaviour:
   backgroundSprite: {fileID: 2608716955419393788, guid: 05a6f10f9bf1e054993b6719c8546c3a, type: 3}
   catSprite: {fileID: 0}
   catDialogue: "\u2026\u2026\u54AA\u55DA\uFF1F\u4F60\u2026\u2026\u8981\u505A\u4EC0\u9EBC\uFF1F"
-  systemMessage: 
+  systemMessage: "\u7B2C\u4E00\u95DC\uFF1A\u4F60\u8981\u9818\u990A\u7260\u55CE\uFF1F"
   options:
   - optionText: "\u6211\u60F3\u9760\u8FD1\u4F60..."
     resultText: 
     nextNodeID: Node_2
     scoreChange: 1
-  - optionText: "\u5C0D\u4E0D\u8D77..."
-    resultText: Node_1_Choice_2
-    nextNodeID: 
+  - optionText: "\u5C0D\u4E0D\u8D77\uFF0C\u6211\u4E0D\u80FD\u9818\u990A\u4F60..."
+    resultText: 
+    nextNodeID: Node_1_Choice_2
     scoreChange: 0
