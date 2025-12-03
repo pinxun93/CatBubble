@@ -85,11 +85,11 @@ public class DialogueManager : MonoBehaviour
 
         if (nodeDictionary.ContainsKey("Node_1"))
         {
-            LoadNode("Node_1");
+            LoadNode("Node_start");
         }
         else
         {
-            Debug.LogError("找不到起始節點 'Node_1'，請檢查 ScriptableObject 資源！");
+            Debug.LogError("找不到起始節點 'Node_start'，請檢查 ScriptableObject 資源！");
         }
     }
 
