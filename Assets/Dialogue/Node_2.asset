@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e85becadbeb0639448b23b4a37040e64, type: 3}
-  m_Name: Node_1_StreetCorner
+  m_Name: Node_2
   m_EditorClassIdentifier: 
   nodeID: Node_1
   backgroundSprite: {fileID: 2608716955419393788, guid: 05a6f10f9bf1e054993b6719c8546c3a, type: 3}

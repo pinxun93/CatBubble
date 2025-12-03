@@ -14,20 +14,26 @@ public class DialogueManager : MonoBehaviour
     [Header("UI References")]
     public Image backgroundImage;
     public Image catImage;
-    public TMP_Text catText; // 小貓發言文本
-    public TMP_Text systemText; // 系統訊息文本
-    public Transform optionContainer; // 選項按鈕的父物件
+    public TMP_Text catText;
+    public TMP_Text systemText;
+    public Transform optionContainer;
+
+    // --- 計時器 UI ---
+    [Header("Timer UI")]
+    public Image timerFillImage;
+    public float maxTime = 10f;
 
     [Header("Prefabs")]
-    public GameObject optionPrefab; // 選項按鈕 Prefab
+    public GameObject optionPrefab;
 
     // --- 數據與狀態 ---
     [Header("Data & Settings")]
     public List<DialogueNode> allNodes;
-    public float typewriterSpeed = 0.05f; // 打字機速度 (秒/字)
+    public float typewriterSpeed = 0.05f;
     private Dictionary<string, DialogueNode> nodeDictionary;
-    private int relationshipScore = 0; // 追蹤親密度
+    private int relationshipScore = 0;
     private bool isTyping = false;
+    private Coroutine countdownCoroutine;
 
     // ==========================================================
     // MARK: - Unity Life Cycles
@@ -35,19 +41,44 @@ public class DialogueManager : MonoBehaviour
 
     void Awake()
     {
-        // 設置單例
         if (Instance == null) { Instance = this; } else { Destroy(gameObject); }
 
-        // 將 List 轉換為 Dictionary，方便用 ID 查找
         if (allNodes != null && allNodes.Count > 0)
         {
             nodeDictionary = allNodes.ToDictionary(node => node.nodeID, node => node);
+        }
+
+        // ★★★ 核心修正：使用整數值替代列舉類型 ★★★
+        if (timerFillImage != null)
+        {
+            try
+            {
+                // 1. 強制將 Image Type 設為 Filled (值 = 3)
+                // Image.Type.Filled 的內部值是 3
+                timerFillImage.type = (Image.Type)3;
+
+                // 2. 強制設定填充方法為 Radial 360 (值 = 2)
+                // Image.FillMethod.Radial360 的內部值是 2
+                timerFillImage.fillMethod = (Image.FillMethod)2;
+
+                // 3. 強制設定填充起點為 Top (值 = 2)
+                // Image.FillOrigin.Top 的內部值是 2
+                timerFillImage.fillOrigin = 2; // 注意：這裡直接使用 int，而不是 (int)Image.FillOrigin.Top
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("無法在 Awake 中設定 Image 類型，可能不是標準 Image 組件：" + e.Message);
+            }
         }
     }
 
     void Start()
     {
-        // 遊戲開始，載入第一個節點 (請確保您有 ID 為 "Node_1" 的 ScriptableObject)
+        if (timerFillImage != null)
+        {
+            timerFillImage.gameObject.SetActive(false);
+        }
+
         if (nodeDictionary.ContainsKey("Node_1"))
         {
             LoadNode("Node_1");
@@ -64,14 +95,16 @@ public class DialogueManager : MonoBehaviour
 
     public void LoadNode(string nodeID)
     {
-        // 如果正在打字，則先停止舊的協程
         if (isTyping)
         {
             StopAllCoroutines();
             isTyping = false;
         }
 
-        if (nodeID.Contains("END")) // 判斷是否為結局 ID
+        // 停止舊的計時器
+        StopTimer();
+
+        if (nodeID.Contains("END"))
         {
             TriggerEnding(nodeID == "FINAL_GOOD_END");
             return;
@@ -85,59 +118,93 @@ public class DialogueManager : MonoBehaviour
 
         DialogueNode nodeToLoad = nodeDictionary[nodeID];
 
-        // 1. 更新背景和角色圖片
-        if (nodeToLoad.backgroundSprite != null)
-        {
-            backgroundImage.sprite = nodeToLoad.backgroundSprite;
-        }
-        if (nodeToLoad.catSprite != null)
-        {
-            catImage.sprite = nodeToLoad.catSprite;
-            catImage.enabled = true;
-        }
-        else
-        {
-            catImage.enabled = false;
-        }
+        // 1. 更新 UI 圖片和文本
+        if (nodeToLoad.backgroundSprite != null) { backgroundImage.sprite = nodeToLoad.backgroundSprite; }
+        if (nodeToLoad.catSprite != null) { catImage.sprite = nodeToLoad.catSprite; catImage.enabled = true; }
+        else { catImage.enabled = false; }
 
-        // 2. 更新系統訊息
         systemText.text = nodeToLoad.systemMessage;
 
-        // 3. 清除舊選項
-        foreach (Transform child in optionContainer)
-        {
-            Destroy(child.gameObject);
-        }
+        // 2. 清除舊選項
+        foreach (Transform child in optionContainer) { Destroy(child.gameObject); }
 
-        // 4. 開始文本顯示 (打字機效果)
+        // 3. 開始文本顯示 (打字機效果)
         StartCoroutine(TypewriterEffect(nodeToLoad.catDialogue, nodeToLoad.options));
     }
 
     // 玩家點擊選項按鈕時呼叫
     public void OnOptionSelected(Option selectedOption)
     {
-        // 1. 更新親密度分數
+        // 停止計時器
+        StopTimer();
+
         relationshipScore += selectedOption.scoreChange;
-
-        // 2. 顯示即時回覆
         systemText.text = selectedOption.resultText;
-
-        // 3. 載入下一個節點
         LoadNode(selectedOption.nextNodeID);
     }
 
     // ==========================================================
-    // MARK: - Typewriter Effect (打字機效果)
+    // MARK: - Timer Logic
     // ==========================================================
 
-    // 協程：逐字顯示文本
+    private void StopTimer()
+    {
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine);
+            countdownCoroutine = null;
+        }
+        if (timerFillImage != null)
+        {
+            timerFillImage.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator StartCountdown()
+    {
+        float currentTime = maxTime;
+        if (timerFillImage != null)
+        {
+            timerFillImage.gameObject.SetActive(true);
+        }
+
+        while (currentTime > 0)
+        {
+            currentTime -= Time.deltaTime;
+
+            // 更新 UI 視覺效果 (讓時鐘會動)
+            if (timerFillImage != null)
+            {
+                timerFillImage.fillAmount = currentTime / maxTime;
+            }
+
+            yield return null;
+        }
+
+        // 時間歸零，觸發超時
+        TriggerTimeout();
+    }
+
+    private void TriggerTimeout()
+    {
+        // 禁用所有選項 (防止超時後還能點擊)
+        SetOptionsInteractable(false);
+
+        // 假設超時後導向一個通用的超時節點
+        Debug.Log("時間到！未在 10 秒內選擇，導向超時處理節點。");
+        // 可以在數據中創建一個 "TIMEOUT_NODE" 來處理超時
+        LoadNode("TIMEOUT_NODE");
+    }
+
+    // ==========================================================
+    // MARK: - Typewriter & Options Logic
+    // ==========================================================
+
     private IEnumerator TypewriterEffect(string textToType, List<Option> options)
     {
         isTyping = true;
-        catText.text = ""; // 清空文本
-
-        // 禁用所有選項，直到打字完成
-        SetOptionsActive(false);
+        catText.text = "";
+        SetOptionsInteractable(false); // 禁用按鈕，直到打字完成
 
         foreach (char letter in textToType.ToCharArray())
         {
@@ -149,43 +216,38 @@ public class DialogueManager : MonoBehaviour
 
         // 打字完成，載入選項
         LoadOptionsUI(options);
+
+        // 選項出現後，開始計時
+        countdownCoroutine = StartCoroutine(StartCountdown());
     }
 
-    // 實例化選項按鈕
     private void LoadOptionsUI(List<Option> options)
     {
         if (options == null || options.Count == 0) return;
 
         foreach (var option in options)
         {
-            // 創建按鈕實例
             GameObject buttonObj = Instantiate(optionPrefab, optionContainer);
 
-            // 設置按鈕文本
-            TMP_Text buttonText = buttonObj.GetComponentInChildren<TMP_Text>();
-            if (buttonText != null)
+            OptionButton optionScript = buttonObj.GetComponent<OptionButton>();
+            if (optionScript != null)
             {
-                buttonText.text = option.optionText;
-            }
-
-            // 加入點擊監聽器
-            Button btn = buttonObj.GetComponent<Button>();
-            if (btn != null)
-            {
-                // 使用 Lambda 函數將當前 Option 結構體傳遞給 OnOptionSelected
-                btn.onClick.AddListener(() => OnOptionSelected(option));
+                // 使用 OptionButton 腳本來設置文本和點擊事件
+                optionScript.Setup(option.optionText, () => OnOptionSelected(option));
             }
         }
-        SetOptionsActive(true);
+
+        // 啟用所有選項按鈕
+        SetOptionsInteractable(true);
     }
 
-    // 控制選項容器的啟用/禁用
-    private void SetOptionsActive(bool isActive)
+    // 設置選項按鈕是否可以互動
+    private void SetOptionsInteractable(bool interactable)
     {
-        // 確保選項容器存在且不為空
-        if (optionContainer != null)
+        OptionButton[] buttons = optionContainer.GetComponentsInChildren<OptionButton>();
+        foreach (OptionButton btn in buttons)
         {
-            optionContainer.gameObject.SetActive(isActive);
+            btn.SetInteractable(interactable);
         }
     }
 
@@ -195,17 +257,8 @@ public class DialogueManager : MonoBehaviour
 
     private void TriggerEnding(bool isGoodEnding)
     {
-        // 這裡可以加入場景切換邏輯 (例如：使用 SceneManager.LoadScene)
-        Debug.Log("遊戲結束！親密度分數: " + relationshipScore);
-
-        if (isGoodEnding)
-        {
-            Debug.Log("恭喜獲得：新的家人！");
-        }
-        else
-        {
-            Debug.Log("結局：錯過的緣分。");
-        }
-        // 這裡可以停止所有 UI 顯示並鎖定輸入
+        StopTimer();
+        systemText.text = isGoodEnding ? "恭喜！新的家人。" : "錯過的緣分。";
+        // 這裡可以加入場景切換或結局畫面顯示
     }
 }
