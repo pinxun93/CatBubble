@@ -64,7 +64,11 @@ public class DialogueManager : MonoBehaviour
                 // 3. 強制設定填充起點為 Top (值 = 2)
                 // Image.FillOrigin.Top 的內部值是 2
                 timerFillImage.fillOrigin = 2; // 注意：這裡直接使用 int，而不是 (int)Image.FillOrigin.Top
+                
+                // 4. 設定為順時針方向減少
+                timerFillImage.fillClockwise = true; // 順時針減少
             }
+
             catch (System.Exception e)
             {
                 Debug.LogWarning("無法在 Awake 中設定 Image 類型，可能不是標準 Image 組件：" + e.Message);

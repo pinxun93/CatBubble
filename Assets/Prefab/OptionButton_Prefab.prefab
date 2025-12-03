@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1556151520996221410}
   - component: {fileID: 2432629722661273646}
   - component: {fileID: 5259545311807141524}
+  - component: {fileID: 7658589200264787832}
   m_Layer: 5
   m_Name: OptionButton_Prefab
   m_TagString: Untagged
@@ -36,8 +37,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -26.9953, y: 0}
-  m_SizeDelta: {x: 530.1853, y: 119.0945}
+  m_AnchoredPosition: {x: -117.1319, y: -3.6604}
+  m_SizeDelta: {x: 333.4406, y: 126.4152}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1556151520996221410
 CanvasRenderer:
@@ -121,6 +122,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7658589200264787832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5252486951410293080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b9ad4ae413f4604da6f81b3ca535db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8420584689450457772
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,8 +226,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35
-  m_fontSizeBase: 35
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
